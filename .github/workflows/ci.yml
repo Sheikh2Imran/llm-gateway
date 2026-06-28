@@ -61,7 +61,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     permissions:
-      id-token: write   # request a temporary AWS login token
+      id-token: write
       contents: read
 
     outputs:
