@@ -70,6 +70,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Before run 'AWS credentials configuration', complete these below steps.
+      # 1. GitHub OIDC provider added to AWS IAM
+      # 2. IAM Role created with Web Identity
+      # 3. Trust policy updated with your Account ID + GitHub username
+      # 4. ECR + ECS permissions attached to role
+      # 5. Role ARN copied
+      # 6. AWS_ROLE_ARN secret added to GitHub repo
+      # 7. ECR repository named llm-gateway created
+      # 8. Pushed to main, pipeline running
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -112,6 +122,12 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
+
+      # Before run 'Download current ECS task definition', complete these below steps.
+      # 1 — Create a ECS Cluster called llm-gateway-cluster
+      # 2 — Create a task definition with ECR image uri + env vars
+      # 3 — Create a service called llm-gateway-service with 1 task and public IP on
+      # 4 — When Task status = RUNNING, public IP found
 
       - name: Download current ECS task definition
         run: |
