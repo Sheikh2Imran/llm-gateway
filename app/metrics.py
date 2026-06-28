@@ -1,17 +1,21 @@
+"""
+metrics.py — In-memory metrics store.
+For production, swap this out for CloudWatch / Prometheus / Datadog.
+"""
+
 from collections import defaultdict
-from dataclasses import dataclass, field
 from threading import Lock
 
 
-@dataclass
 class MetricsStore:
-    total_requests: int = 0
-    total_cost_usd: float = 0.0
-    total_latency_ms: float = 0.0
-    fallback_count: int = 0
-    attempt_model: dict = field(default_factory=lambda: defaultdict(int))
-    provider_usage: dict = field(default_factory=lambda: defaultdict(int))
-    _lock: Lock = field(default_factory=Lock, repr=False)
+    def __init__(self):
+        self.total_requests: int = 0
+        self.total_cost_usd: float = 0.0
+        self.total_latency_ms: float = 0.0
+        self.fallback_count: int = 0
+        self.attempt_model: dict = defaultdict(int)
+        self.provider_usage: dict = defaultdict(int)
+        self._lock = Lock()
 
     def record(
         self,

@@ -2,3 +2,5 @@ venv/
 docker-compose.yml
 .env
 .idea
+conftest.py
+pytest.ini

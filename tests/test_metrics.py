@@ -21,8 +21,8 @@ def test_record_increments_counts():
     summary = store.summary()
     assert summary["total_requests"] == 2
     assert summary["fallback_count"] == 1
-    assert summary["model_usage"]["gpt-4o-mini"] == 1
-    assert summary["model_usage"]["claude-haiku-4-5-20251001"] == 1
+    assert summary["attempt_model"]["gpt-4o-mini"] == 1
+    assert summary["attempt_model"]["claude-haiku-4-5-20251001"] == 1
     assert summary["provider_usage"]["openai"] == 1
     assert summary["provider_usage"]["anthropic"] == 1
 

@@ -1,8 +1,14 @@
+"""Tests for routing table and model selection (no API calls)."""
+
 import pytest
 from unittest.mock import AsyncMock, patch
-from app.models import ChatRequest, RoutingStrategy
+from app.models import ChatRequest, RoutingStrategy, UsageInfo
 from app.router import route, ROUTING_TABLE
 from app.scorer import Complexity
+
+
+def make_usage():
+    return UsageInfo(input_tokens=10, output_tokens=20, estimated_cost_usd=0.0001)
 
 
 def test_routing_table_completeness():
@@ -25,16 +31,12 @@ def test_routing_table_providers():
 async def test_route_calls_correct_model_for_low_cost():
     request = ChatRequest(prompt="What is Python?", strategy=RoutingStrategy.COST)
 
-    mock_response = ("Python is a programming language.", None, 200.0)
-
     with patch("app.router._call_provider", new_callable=AsyncMock) as mock_call:
-        mock_call.return_value = mock_response[0], \
-            type("U", (), {"input_tokens": 10, "output_tokens": 20, "estimated_cost_usd": 0.0001})(), \
-            mock_response[2]
+        mock_call.return_value = ("Python is a programming language.", make_usage(), 200.0)
 
         response = await route(request)
         # Low complexity + cost → cheapest model (haiku or gpt-4o-mini)
-        assert response.model_used in ("claude-haiku-4-5-20251001", "gpt-4o-mini")
+        assert response.attempt_model in ("claude-haiku-4-5-20251001", "gpt-4o-mini")
         assert response.fallback_used is False
 
 
@@ -49,9 +51,7 @@ async def test_fallback_triggered_on_failure():
         call_count += 1
         if call_count == 1:
             raise Exception("Primary model failed")
-        from app.models import UsageInfo
-        usage = UsageInfo(input_tokens=5, output_tokens=5, estimated_cost_usd=0.00001)
-        return "4", usage, 150.0
+        return "4", make_usage(), 150.0
 
     with patch("app.router._call_provider", side_effect=mock_call):
         response = await route(request)
@@ -68,11 +68,9 @@ async def test_force_model_override():
     )
 
     async def mock_call(provider, model, **kwargs):
-        from app.models import UsageInfo
-        usage = UsageInfo(input_tokens=5, output_tokens=5, estimated_cost_usd=0.001)
-        return "Hello!", usage, 100.0
+        return "Hello!", make_usage(), 100.0
 
     with patch("app.router._call_provider", side_effect=mock_call):
         response = await route(request)
-        assert response.model_used == "gpt-4o"
+        assert response.attempt_model == "gpt-4o"
         assert "Forced" in response.routing_reason
