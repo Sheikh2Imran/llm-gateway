@@ -132,9 +132,10 @@ jobs:
       - name: Download current ECS task definition
         run: |
           aws ecs describe-task-definition \
-            --task-definition llm-gateway \
-            --query taskDefinition \
-            > task-definition.json
+          --task-definition llm-gateway \
+          --query taskDefinition \
+          | jq 'del(.enableFaultInjection)' \
+          > task-definition.json
 
       - name: Update image in task definition
         id: task-def
@@ -145,7 +146,7 @@ jobs:
           image: ${{ needs.build.outputs.image }}
 
       - name: Deploy to ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
