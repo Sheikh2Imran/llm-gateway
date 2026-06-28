@@ -167,29 +167,6 @@ For 1,000 requests (avg 200 input + 300 output tokens):
 **AUTO is ~45× cheaper than QUALITY** for mixed workloads.
 
 ---
-
-## Project Structure
-
-```
-llm-gateway/
-├── app/
-│   ├── main.py          # FastAPI app, routes, middleware
-│   ├── router.py        # Routing logic + fallback chains
-│   ├── scorer.py        # Prompt complexity classification
-│   ├── metrics.py       # In-memory usage tracking
-│   ├── models.py        # Pydantic schemas
-│   ├── config.py        # Settings via env vars
-│   └── providers/
-│       ├── openai.py    # OpenAI wrapper
-│       └── anthropic.py # Anthropic wrapper
-├── tests/
-│   ├── test_scorer.py
-│   ├── test_router.py
-│   └── test_metrics.py
-├── docs/
-│   └── decisions.md     # Architecture decision log
-├── .github/workflows/
-│   └── ci.yml           # CI/CD pipeline
 ├── Dockerfile
 ├── docker-compose.yml
 └── requirements.txt
