@@ -1,5 +1,3 @@
-"""Tests for routing table and model selection (no API calls)."""
-
 import pytest
 from unittest.mock import AsyncMock, patch
 from app.models import ChatRequest, RoutingStrategy

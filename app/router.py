@@ -65,9 +65,6 @@ async def _call_provider(
 
 
 async def route(request: ChatRequest) -> ChatResponse:
-    """Main routing entry point."""
-    settings = get_settings()
-
     # Score prompt complexity
     complexity, score_reason = score_complexity(
         request.prompt, request.system_prompt or ""

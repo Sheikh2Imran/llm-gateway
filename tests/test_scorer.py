@@ -1,6 +1,3 @@
-"""Tests for the complexity scorer."""
-
-import pytest
 from app.scorer import score_complexity, Complexity
 
 

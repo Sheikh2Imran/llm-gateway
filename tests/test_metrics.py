@@ -1,6 +1,3 @@
-"""Tests for the metrics store."""
-
-import pytest
 from app.metrics import MetricsStore
 
 
